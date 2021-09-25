@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="delegatedBuild" value="false" />
+        <option name="testRunner" value="PLATFORM" />
+        <option name="distributionType" value="WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Pawns-Only Chess/task" />
+            <option value="$PROJECT_DIR$/Topics/Declaring functions/Get last digit" />
+            <option value="$PROJECT_DIR$/Topics/Declaring functions/The square of a number" />
+            <option value="$PROJECT_DIR$/Topics/Declaring functions/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Equality/Kings of Sweden" />
+            <option value="$PROJECT_DIR$/Topics/Equality/Referential equality" />
+            <option value="$PROJECT_DIR$/Topics/Equality/Theory" />
+            <option value="$PROJECT_DIR$/Topics/For loop and arrays/Counting" />
+            <option value="$PROJECT_DIR$/Topics/For loop and arrays/Cyclically shifting elements" />
+            <option value="$PROJECT_DIR$/Topics/For loop and arrays/Individual taxes" />
+            <option value="$PROJECT_DIR$/Topics/For loop and arrays/Theory" />
+            <option value="$PROJECT_DIR$/Topics/For loop and lists/Circular shift" />
+            <option value="$PROJECT_DIR$/Topics/For loop and lists/Individual taxes" />
+            <option value="$PROJECT_DIR$/Topics/For loop and lists/Right Rotation" />
+            <option value="$PROJECT_DIR$/Topics/For loop and lists/The index of the first max" />
+            <option value="$PROJECT_DIR$/Topics/For loop and lists/Theory" />
+            <option value="$PROJECT_DIR$/Topics/For loop and lists/Two numbers in a row" />
+            <option value="$PROJECT_DIR$/Topics/Getting substrings/Case insensitive" />
+            <option value="$PROJECT_DIR$/Topics/Getting substrings/Theory" />
+            <option value="$PROJECT_DIR$/Topics/If expression/Boxes" />
+            <option value="$PROJECT_DIR$/Topics/If expression/Number dividers" />
+            <option value="$PROJECT_DIR$/Topics/If expression/Positive, Negative or Zero" />
+            <option value="$PROJECT_DIR$/Topics/If expression/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Multi-dimensional list/Corners" />
+            <option value="$PROJECT_DIR$/Topics/Multi-dimensional list/Kotlin lists" />
+            <option value="$PROJECT_DIR$/Topics/Multi-dimensional list/Shapeshifter" />
+            <option value="$PROJECT_DIR$/Topics/Multi-dimensional list/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Mutable list/Initializing a list" />
+            <option value="$PROJECT_DIR$/Topics/Mutable list/Initializing a mutable list of integers" />
+            <option value="$PROJECT_DIR$/Topics/Mutable list/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Named arguments/Greeting" />
+            <option value="$PROJECT_DIR$/Topics/Named arguments/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Overview of the basic program/The Hello World program" />
+            <option value="$PROJECT_DIR$/Topics/Overview of the basic program/The eternal truth" />
+            <option value="$PROJECT_DIR$/Topics/Overview of the basic program/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Compression algorithm" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Convert a date" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Palindrome" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/The lucky ticket" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Regexps/Backslash problem" />
+            <option value="$PROJECT_DIR$/Topics/Regexps/Escapism" />
+            <option value="$PROJECT_DIR$/Topics/Regexps/Help the teacher" />
+            <option value="$PROJECT_DIR$/Topics/Regexps/Rings of Power" />
+            <option value="$PROJECT_DIR$/Topics/Regexps/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Repeating blocks/Kotlin x5" />
+            <option value="$PROJECT_DIR$/Topics/Repeating blocks/Size of parts" />
+            <option value="$PROJECT_DIR$/Topics/Repeating blocks/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Work with MutableLists/Empty" />
+            <option value="$PROJECT_DIR$/Topics/Work with MutableLists/Guard On The Gate" />
+            <option value="$PROJECT_DIR$/Topics/Work with MutableLists/Playing with numbers" />
+            <option value="$PROJECT_DIR$/Topics/Work with MutableLists/Theory" />
+            <option value="$PROJECT_DIR$/util" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
