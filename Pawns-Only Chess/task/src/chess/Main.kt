@@ -90,6 +90,19 @@ fun CellType.toColor() = when (this) {
     else -> ""
 }
 
+fun List<List<CellType>>.isCellOfType(x: Int, y: Int, type: CellType) = this[y][x] == type
+
+fun List<MutableList<CellType>>.movePawn(command: Command.Move) {
+    this[command.end.y][command.end.x] = this[command.start.y][command.start.x]
+    this[command.start.y][command.start.x] = CellType.Empty
+}
+
+fun List<MutableList<CellType>>.countPawnsOfType(cellType: CellType): Int {
+    return sumOf { rank ->
+        rank.count { it == cellType }
+    }
+}
+
 /**
  * This class represents game process. It contains main loop and controls player's input requests.
  */
@@ -104,27 +117,43 @@ class Game(
         }
     }
 
+    data class BittenCell(
+        val cell: Coordinate,
+        val weekPawn: Coordinate,
+        val weekPawnType: CellType,
+    )
+
+    private var bittenCell: BittenCell? = null
+    private lateinit var currentPlayer: Player
+
     /**
      * Main loop
      */
     fun run() {
-        var currentPlayer: Player
         var step = 0
+
         while (true) {
             printBoard()
+
+            // check game state
+            if (isWinCondition()) {
+                break
+            }
+
+            if (isStalemateCondition()) {
+                println("Stalemate!")
+                break
+            }
+
             currentPlayer = players[step % 2]
             // Ask player to make a move. If move is invalid ask him again, until we get correct one
             while (true) {
-                val command = enterCommand(currentPlayer)
+                val command = enterCommand()
                 try {
                     when (command) {
                         Command.Exit -> return
                         is Command.Move -> {
-                            // Validate move
-                            validateMove(currentPlayer, command)
-                            // Process move
-                            board[command.end.y][command.end.x] = board[command.start.y][command.start.x]
-                            board[command.start.y][command.start.x] = CellType.Empty
+                            processPlayersTurn(command)
                             break
                         }
                     }
@@ -144,26 +173,150 @@ class Game(
         }
     }
 
-    /**
-     * Validate player's move
-     */
-    private fun validateMove(player: Player, command: Command.Move) {
-        if (board[command.start.y][command.start.x] != player.type) {
-            throw NoPawnToMoveException("No pawn at [${command.start.x},${command.start.y}] of ${player.type} type")
+    private fun isWinCondition(): Boolean {
+        // Check win conditions for whites
+        val whitePawnsReachTheEnd = board.last().count {
+            it == CellType.White
+        }
+        val noBlackPawns = board.countPawnsOfType(CellType.Black) == 0
+
+        if (whitePawnsReachTheEnd > 0 || noBlackPawns) {
+            println("White Wins!")
+            return true
         }
 
-        if (command.start.x != command.end.x) {
-            throw InvalidMoveException("only vertical move is allowed")
+        // Check win conditions for blacks
+        val blackPawnsReachTheEnd = board.first().count {
+            it == CellType.Black
         }
+        val noWhitePawns = board.countPawnsOfType(CellType.White) == 0
+
+        if (blackPawnsReachTheEnd > 0 || noWhitePawns) {
+            println("Black Wins!")
+            return true
+        }
+
+        return false
+    }
+
+    private fun isStalemateCondition(): Boolean {
+        val canMove: (CellType, Int, Int) -> Boolean = { type, x, y ->
+            (type == CellType.White && board[y + 1][x] == CellType.Empty) ||
+                (type == CellType.Black && board[y - 1][x] == CellType.Empty)
+        }
+        val canCapture: (CellType, Int, Int) -> Boolean = { type, x, y ->
+            if (type == CellType.White) {
+                (x - 1) >= 0 && (board[y + 1][x - 1] == CellType.Black) ||
+                    (x + 1) <= 8 && (board[y + 1][x + 1] == CellType.Black)
+            } else {
+                (x - 1) >= 0 && (board[y - 1][x - 1] == CellType.White) ||
+                    (x + 1) <= 7 && (board[y - 1][x + 1] == CellType.White)
+            }
+        }
+
+        var blackHasMoves = false
+        var whiteHasMoves = false
+        for (y in board.indices) {
+            for (x in board[y].indices) {
+                if (!whiteHasMoves && board[y][x] == CellType.White) {
+                    if (canMove(CellType.White, x, y) || canCapture(CellType.White, x, y)) {
+                        whiteHasMoves = true
+                    }
+                } else if (!blackHasMoves && board[y][x] == CellType.Black) {
+                    if (canMove(CellType.Black, x, y) || canCapture(CellType.Black, x, y)) {
+                        blackHasMoves = true
+                    }
+                } else if (board[y][x] == CellType.Empty) {
+                    continue
+                }
+                if (blackHasMoves && whiteHasMoves) {
+                    break
+                }
+            }
+        }
+
+        return !blackHasMoves || !whiteHasMoves
+    }
+
+    /**
+     * Process player's turn
+     */
+    private fun processPlayersTurn(command: Command.Move) {
+        if (!board.isCellOfType(command.start.x, command.start.y, currentPlayer.type)) {
+            throw NoPawnToMoveException("No pawn at ${command.start.toChess()} of ${currentPlayer.type} type")
+        }
+
+        if (command.start.x == command.end.x) {
+            playerMove(command)
+        } else if (
+            abs(command.start.x - command.end.x) == 1 &&
+            abs(command.start.y - command.end.y) == 1
+        ) {
+            playerCapture(command)
+        } else {
+            throw InvalidMoveException("only vertical move or capture is allowed")
+        }
+    }
+
+    /**
+     * make player's capture
+     */
+    private fun playerCapture(command: Command.Move) {
+        if (currentPlayer.type == CellType.White) {
+            // white captures black
+            if (command.start.y > command.end.y) {
+                throw InvalidMoveException("white: wrong direction")
+            }
+            if (bittenCell != null && bittenCell!!.cell == command.end) {
+                return playerEnPassant(command)
+            } else if (!board.isCellOfType(command.end.x, command.end.y, CellType.Black)) {
+                throw InvalidMoveException("Can't capture no black pawn at ${command.end.toChess()}")
+            }
+        } else {
+            // black captures white
+            if (command.start.y < command.end.y) {
+                throw InvalidMoveException("white: wrong direction")
+            }
+            if (bittenCell != null && bittenCell!!.cell == command.end) {
+                return playerEnPassant(command)
+            } else if (!board.isCellOfType(command.end.x, command.end.y, CellType.White)) {
+                throw InvalidMoveException("Can't capture no white pawn at ${command.end.toChess()}")
+            }
+        }
+
+        // process capture
+        board.movePawn(command)
+
+        // reset bitten cell if any
+        bittenCell = null
+    }
+
+    /**
+     * Process player en passant
+     */
+    private fun playerEnPassant(command: Command.Move) {
+        board.movePawn(command)
+
+        bittenCell?.let {
+            // remove week pawn from board
+            board[it.weekPawn.y][it.weekPawn.x] = CellType.Empty
+            // reset bitten cell if any
+            bittenCell = null
+        }
+    }
+
+    /**
+     * make player's move
+     */
+    private fun playerMove(command: Command.Move) {
 
         val len = abs(command.start.y - command.end.y)
         if (len > 2) {
             throw InvalidMoveException("requested step is too large: [$len]")
         }
-
-        if (player.type == CellType.White) {
+        if (currentPlayer.type == CellType.White) {
+            // white moves
             if (command.start.y >= command.end.y) {
-                // wrong direction or no advance
                 throw InvalidMoveException("white: wrong direction or no advance")
             }
             if (len == 2 && command.start.y != 1) {
@@ -179,6 +332,7 @@ class Game(
                 }
             }
         } else {
+            // black moves
             if (command.start.y <= command.end.y) {
                 throw InvalidMoveException("black: wrong direction or no advance")
             }
@@ -195,16 +349,37 @@ class Game(
                 }
             }
         }
+
+        // process move
+        board.movePawn(command)
+
+        if (len == 2) {
+            // register bitten cell
+            this.bittenCell = BittenCell(
+                cell = Coordinate(
+                    x = command.end.x,
+                    y = if (currentPlayer.type == CellType.White) {
+                        command.end.y - 1
+                    } else {
+                        command.end.y + 1
+                    }
+                ),
+                weekPawn = command.end,
+                weekPawnType = currentPlayer.type
+            )
+        } else {
+            this.bittenCell = null
+        }
     }
 
     /**
      * Wait for player's input and convert it to Command
      * if input is inappropriate we ask player to make request again
      */
-    private fun enterCommand(player: Player): Command {
+    private fun enterCommand(): Command {
         while (true) {
             try {
-                print("${player.name}'s turn:\n> ")
+                print("${currentPlayer.name}'s turn:\n> ")
                 val input = readLine()!!
                 if (input == "exit") {
                     return Command.Exit
