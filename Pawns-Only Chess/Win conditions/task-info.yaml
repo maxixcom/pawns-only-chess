@@ -621,6 +621,9 @@ files:
 
 
   learner_created: false
+- name: src/chess/Test.kt
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/182/stages/926/implement#comment
 status: Solved
 feedback:

@@ -21,3 +21,5 @@ content:
 - Object declarations
 - Companion object
 - Enum
+- Properties accessors
+- Secondary constructor
